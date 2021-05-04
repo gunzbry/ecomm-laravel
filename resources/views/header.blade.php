@@ -4,6 +4,7 @@ $total = 0;
 if(Session::has('user')){
   $total = ProductController::cartItem();
 }
+$method_name = explode('@', Route::getCurrentRoute()->getActionName())[1];
 ?>
 <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -21,8 +22,14 @@ if(Session::has('user')){
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="/">Home</a></li>
-        <li class=""><a href="/myorders">Orders</a></li>
+        @if ($method_name == "myOrders")
+          <li class=""><a href="/">Home</a></li>
+          <li class="active"><a href="/myorders">Orders</a></li>
+        @else
+          <li class="active"><a href="/">Home</a></li>
+          <li class=""><a href="/myorders">Orders</a></li>
+        @endif
+
       </ul>
       <form action="\search" class="navbar-form navbar-left">
         <div class="form-group">
@@ -42,6 +49,8 @@ if(Session::has('user')){
         </li>            
         @else
           <li><a href="/login">Login</a></li>
+          <li><a href="/register">Register</a></li>
+
         @endif
 
       </ul>

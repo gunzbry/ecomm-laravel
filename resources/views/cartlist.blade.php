@@ -7,28 +7,33 @@
             {{-- Search Result --}}
             <div class="trending-wrapper">
                 <h3>My Cart</h3>
-                <a class="btn btn-success" href="ordernow">Order Now</a>
-                <div class="">
-                    @foreach ($products as $item)
-                        <div class="row searched-item cart-list-divider">
-                            <div class="col-sm-3">
-                                <a href="detail/{{ $item->id }}">
-                                    <img class="trending-image" src="{{ $item->gallery }}">
-                                </a>
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="">
-                                    <h3>{{ $item->name }}</h3>
-                                    <h5>{{ $item->description }}</h5>
+                @if (count($products) > 0)
+                    <a class="btn btn-success" href="ordernow">Order Now</a>
+                    <div class="">
+                        @foreach ($products as $item)
+                            <div class="row searched-item cart-list-divider">
+                                <div class="col-sm-3">
+                                    <a href="detail/{{ $item->id }}">
+                                        <img class="trending-image" src="{{ $item->gallery }}">
+                                    </a>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="">
+                                        <h3>{{ $item->name }}</h3>
+                                        <h5>{{ $item->description }}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <a class="btn btn-warning" href="/removecart/{{ $item->cart_id }}">Remove From Cart</a>
                                 </div>
                             </div>
-                            <div class="col-sm-3">
-                                <a class="btn btn-warning" href="/removecart/{{ $item->cart_id }}">Remove From Cart</a>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                <a class="btn btn-success" href="ordernow">Order Now</a>
+                        @endforeach
+                    </div>
+                    <a class="btn btn-success" href="ordernow">Order Now</a>
+                @else
+                    <p>Nothing in Cart! Start Shopping Now!</p>
+                @endif
+
             </div>
         </div>    
     </div>
