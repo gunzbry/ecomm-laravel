@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Product;
 use App\Models\Cart;
 use App\Models\Order;
+use Validator;
 
 use Session;
 
@@ -114,4 +115,105 @@ class ProductController extends Controller
         
         return view('myorders', ['orders'=>$orders]);
     }
+
+    // GET API : http://ecomm.test/api/list
+    function getProducts(){
+        $data = Product::all();
+        return ["data"=>$data];
+    }
+
+    // POST API : http://ecomm.test/api/saveproduct
+    // content-type : application/json
+    // {
+    //     "name" : "Akko Mechanical Keyboard",
+    //     "price" : "334",
+    //     "category" : "keyboard",
+    //     "description" : "Brown switch or Red switch will be given based on availability",
+    //     "gallery" : "https://my-live-01.slatic.net/p/a8d8606fa10b46bbf72073a017389244.jpg_2200x2200q80.jpg"
+    // }
+    function setProducts(Request $req){
+        // Validation rules (required, chars >2 < 50)
+        $rules = array(
+            "name" => "required|min:2|max:50"
+        );
+        $validator=Validator::make($req->all(), $rules);
+
+        if($validator->fails()){
+            // return $validator->errors();
+            return response()->json($validator->errors(), 401);
+        }else{
+            $product = new Product;
+            $product->name = $req->name;
+            $product->price = $req->price;
+            $product->category = $req->category;
+            $product->description = $req->description;
+            $product->gallery = $req->gallery;
+            $result = $product->save();
+    
+            if($result){
+                return ["result"=>"Data has been saved!"];
+            }else{
+                return ["result"=>"Operation failed. Please re-check the fields."];
+            }
+        }
+    }
+
+    // PUT API : http://ecomm.test/api/updateproduct
+    // content-type : application/json
+    // {
+    //     "id" : 6,
+    //     "name" : "Akko Mechanical Keyboard",
+    //     "price" : "336",
+    //     "category" : "keyboard",
+    //     "description" : "Brown switch or Red switch will be given based on availability<br>(Red Switch Available!)",
+    //     "gallery" : "https://my-live-01.slatic.net/p/a8d8606fa10b46bbf72073a017389244.jpg_2200x2200q80.jpg"
+    // }
+    function updateProducts(Request $req){
+        $product = Product::find($req->id);
+        if($product){
+            $product->name = $req->name;
+            $product->price = $req->price;
+            $product->category = $req->category;
+            $product->description = $req->description;
+            $product->gallery = $req->gallery;
+            $result = $product->save();
+    
+            if($result){
+                return ["result"=>"Data is updated!"];
+            }else{
+                return ["result"=>"Operation failed. Please re-check the fields."];
+            }
+        }else{
+            return ["result"=>"Product not found."];
+        }
+    }
+
+    // DELETE API : http://ecomm.test/api/deleteproduct/6
+    // content-type : application/json
+    function deleteProducts($id){
+        $product = Product::find($id);
+        if($product){
+            $result = $product->delete();
+
+            if($result){
+                return ["result"=>"Data is Deleted!"];
+            }else{
+                return ["result"=>"Operation failed. Please re-check the fields."];
+            }
+        }else{
+            return ["result"=>"Product not found."];
+        }
+    }
+
+    // GET API : http://ecomm.test/api/search/{Keyword}
+    // content-type : application/json
+    function searchProducts($query){
+        $product = Product::where("name", "LIKE" , "%".$query."%")->get();
+        if(count($product)){
+            return ["result"=>$product];
+        }else{
+            return ["result"=>"Product not found."];
+        }
+    }
+
 }
